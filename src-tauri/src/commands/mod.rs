@@ -1,0 +1,12 @@
+pub mod backup;
+pub mod batch_test;
+pub mod config_dir;
+pub mod keychain;
+pub mod launch;
+pub mod openai_adapter;
+pub mod platform;
+pub mod proxy;
+pub mod secret_store;
+pub mod settings;
+pub mod stats;
+pub mod terminal;

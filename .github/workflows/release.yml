@@ -1,0 +1,88 @@
+name: Release (Windows + 阿里云 OSS)
+
+# 打 tag（如 v0.9.8）即触发：构建 Windows 安装包并签名，
+# 生成 updater 清单 latest.json，全部上传到阿里云 OSS。
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 安装 Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 缓存 Cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: 安装前端依赖
+        run: npm ci
+
+      - name: 构建并签名（生成 updater 产物）
+        # createUpdaterArtifacts: true 已在 tauri.conf.json 开启，
+        # 提供签名私钥后，构建会在安装包旁产出同名 .sig 文件。
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: npm run tauri build -- --bundles nsis
+
+      - name: 生成 latest.json
+        id: manifest
+        shell: pwsh
+        env:
+          # OSS 公网访问域名前缀，例如 https://jcode-release.oss-cn-hangzhou.aliyuncs.com
+          OSS_PUBLIC_BASE: ${{ secrets.OSS_PUBLIC_BASE }}
+        run: |
+          $ver = "${{ github.ref_name }}".TrimStart('v')
+          $nsisDir = "src-tauri/target/release/bundle/nsis"
+          $exe = Get-ChildItem $nsisDir -Filter "*-setup.exe" | Select-Object -First 1
+          if (-not $exe) { throw "未找到 NSIS 安装包" }
+          $sig = Get-Content "$($exe.FullName).sig" -Raw
+          $url = "$env:OSS_PUBLIC_BASE/updater/$($exe.Name)"
+          $manifest = [ordered]@{
+            version  = $ver
+            notes    = "JCode 已更新到 v$ver，详见更新说明。"
+            pub_date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+            platforms = [ordered]@{
+              "windows-x86_64" = [ordered]@{
+                signature = $sig.Trim()
+                url       = $url
+              }
+            }
+          }
+          $manifest | ConvertTo-Json -Depth 6 | Set-Content -Path latest.json -Encoding utf8
+          "exe_path=$($exe.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "exe_name=$($exe.Name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Get-Content latest.json
+
+      - name: 配置 ossutil
+        uses: yizhoumo/setup-ossutil@v2
+        with:
+          endpoint: ${{ secrets.OSS_ENDPOINT }}
+          access-key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
+          access-key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
+
+      - name: 上传到阿里云 OSS
+        shell: pwsh
+        env:
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+        run: |
+          # 1) 先传安装包（带版本号，长期保留作为历史版本）
+          ossutil cp "${{ steps.manifest.outputs.exe_path }}" "oss://$env:OSS_BUCKET/updater/${{ steps.manifest.outputs.exe_name }}" --force
+          # 2) 再传清单（覆盖式，客户端始终读这一个）。务必最后传，确保包已就位。
+          #    no-cache 避免 OSS/CDN 缓存导致客户端读到旧清单。
+          ossutil cp "latest.json" "oss://$env:OSS_BUCKET/updater/latest.json" --force --meta "Cache-Control:no-cache"

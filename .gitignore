@@ -1,0 +1,17 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/.claude-*
+*.log
+.DS_Store
+.claude/
+.claude/settings.local.json
+DOCS/chatlogs.md
+
+# Windows bash crash dumps
+*.stackdump
+
+# 发布产物（体积较大，不入库；保留更新日志）
+release/**
+!release/
+!release/JCode 更新说明.txt
