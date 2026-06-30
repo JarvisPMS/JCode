@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(222.2 84% 4.9%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(222.2 84% 4.9%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(222.2 84% 4.9%);
+  --color-primary: hsl(222.2 47.4% 11.2%);
+  --color-primary-foreground: hsl(210 40% 98%);
+  --color-secondary: hsl(210 40% 96.1%);
+  --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
+  --color-muted: hsl(210 40% 96.1%);
+  --color-muted-foreground: hsl(215.4 16.3% 46.9%);
+  --color-accent: hsl(210 40% 96.1%);
+  --color-accent-foreground: hsl(222.2 47.4% 11.2%);
+  --color-destructive: hsl(0 84.2% 60.2%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-border: hsl(214.3 31.8% 91.4%);
+  --color-input: hsl(214.3 31.8% 91.4%);
+  --color-ring: hsl(222.2 84% 4.9%);
+  --radius: 0.5rem;
+}
+
+/* 深色主题覆盖 */
+.dark {
+  --color-background: hsl(222 14% 10%);
+  --color-foreground: hsl(210 40% 96%);
+  --color-card: hsl(222 14% 13%);
+  --color-card-foreground: hsl(210 40% 96%);
+  --color-popover: hsl(222 14% 13%);
+  --color-popover-foreground: hsl(210 40% 96%);
+  --color-primary: hsl(210 40% 96%);
+  --color-primary-foreground: hsl(222 14% 10%);
+  --color-secondary: hsl(222 14% 18%);
+  --color-secondary-foreground: hsl(210 40% 96%);
+  --color-muted: hsl(222 14% 18%);
+  --color-muted-foreground: hsl(215 16% 57%);
+  --color-accent: hsl(222 14% 18%);
+  --color-accent-foreground: hsl(210 40% 96%);
+  --color-destructive: hsl(0 63% 51%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-border: hsl(222 14% 20%);
+  --color-input: hsl(222 14% 20%);
+  --color-ring: hsl(210 40% 80%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: transparent;
+  }
+  body {
+    @apply text-foreground;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  .app-shell {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+  body.platform-macos:not(.window-maximized) .app-shell {
+    border-radius: 10px;
+  }
+
+  /* 自定义标题栏 */
+  .titlebar {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-background);
+    border-bottom: none;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .titlebar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+  .titlebar-logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  /* 子页面：返回按钮 + 子页图标 + 标题（替换默认 logo + JCode） */
+  .titlebar-subpage {
+    flex: 1;
+    min-width: 0;
+    gap: 6px;
+    padding-left: 4px;
+  }
+  .titlebar-back {
+    -webkit-app-region: no-drag;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--color-muted-foreground);
+    border-radius: 6px;
+    cursor: default;
+    transition: background 0.15s, color 0.15s;
+  }
+  .titlebar-back:hover {
+    background: var(--color-muted);
+    color: var(--color-foreground);
+  }
+  .titlebar-frozen .titlebar-back,
+  .titlebar-frozen .titlebar-back:hover {
+    background: transparent !important;
+    color: var(--color-muted-foreground) !important;
+  }
+  .titlebar-subpage-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-foreground);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .titlebar-actions {
+    -webkit-app-region: no-drag;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-right: 4px;
+  }
+
+  /* 全局底部操作栏 — 子页面统一把关键操作按钮渲染到这里 */
+  .page-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-background);
+    flex-shrink: 0;
+  }
+  .titlebar-controls {
+    display: flex;
+    height: 100%;
+  }
+  .titlebar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: var(--color-foreground);
+    cursor: default;
+    transition: background 0.15s;
+    -webkit-app-region: no-drag;
+  }
+  .titlebar-btn:hover {
+    background: var(--color-muted);
+  }
+  .titlebar-btn:active {
+    background: var(--color-border);
+  }
+  .titlebar-btn-close:hover {
+    background: hsl(0 72% 51%);
+    color: white;
+  }
+  .titlebar-btn-close:active {
+    background: hsl(0 72% 41%);
+    color: white;
+  }
+  /* 有可安装更新时，标题栏的「重启更新」图标用主题色高亮并轻微脉冲 */
+  .titlebar-btn-update {
+    color: var(--color-primary);
+    animation: titlebar-update-pulse 1.8s ease-in-out infinite;
+  }
+  .titlebar-btn-update:hover {
+    background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  }
+  @keyframes titlebar-update-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+  /* 窗口失焦/最小化/隐藏时冻结按钮，强制覆盖 :hover 残留 */
+  .titlebar-frozen .titlebar-btn,
+  .titlebar-frozen .titlebar-btn:hover,
+  .titlebar-frozen .titlebar-btn-close:hover {
+    background: transparent !important;
+    color: var(--color-foreground) !important;
+  }
+
+  /* 滚动条 */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(214.3 31.8% 91.4%);
+    border-radius: 3px;
+    transition: background 0.2s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(215.4 16.3% 76%);
+  }
+}
+
+/* 批量测试输出面板：禁止横向滚动条，纵向滚动条鼠标悬停时才显示 */
+.batch-output {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.batch-output::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  transition: background 0.15s;
+}
+.batch-output:hover::-webkit-scrollbar-thumb {
+  background: hsl(214.3 31.8% 81%) !important;
+}
+.dark .batch-output:hover::-webkit-scrollbar-thumb {
+  background: hsl(222 14% 35%) !important;
+}
+
+/* 延迟显示：hover 1.5秒后淡入，移开立刻消失（放在 @layer 外确保优先级） */
+.delayed-show {
+  opacity: 0 !important;
+  transition: opacity 0s !important;
+}
+.group:hover > .delayed-show,
+.group:hover .delayed-show {
+  opacity: 1 !important;
+  transition: opacity 0.15s 1.5s !important;
+}

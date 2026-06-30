@@ -1,0 +1,20 @@
+{
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "title": "JCode",
+        "width": 460,
+        "height": 700,
+        "minWidth": 360,
+        "minHeight": 400,
+        "resizable": true,
+        "fullscreen": false,
+        "dragDropEnabled": true,
+        "decorations": false,
+        "shadow": true,
+        "transparent": true
+      }
+    ]
+  }
+}

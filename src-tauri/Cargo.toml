@@ -1,0 +1,40 @@
+[package]
+name = "jcode"
+version = "0.9.9"
+edition = "2021"
+
+[lib]
+name = "jcode_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# macos-private-api 与 tauri.macos.conf.json 中的 macOSPrivateApi 配套；
+# 在非 macOS 平台它是 no-op，所以放在主 features 列表里不会带来副作用。
+tauri = { version = "2", features = ["tray-icon", "image-ico"] }
+tauri-plugin-opener = "2"
+tauri-plugin-store = "2"
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4"] }
+dirs = "6"
+resvg = "0.44"
+tauri-plugin-single-instance = "2"
+# 应用内自动更新：检查 / 下载 / 安装；process 用于安装后 relaunch
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+aes-gcm = "0.10"
+sha2 = "0.10"
+base64 = "0.22"
+# 仅用于"从旧 Keychain 迁移"功能 —— 用户在设置页手动触发一次后即可删除。
+keyring = { version = "3", features = ["apple-native", "windows-native"] }
+
+# 本地代理服务（Anthropic Messages API 透传 + 模型名映射）
+axum = "0.7"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "net"] }
+reqwest = { version = "0.12", default-features = false, features = ["stream", "rustls-tls", "json"] }
+futures-util = "0.3"
+bytes = "1"
