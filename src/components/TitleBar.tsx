@@ -181,6 +181,7 @@ function UpdateIndicator() {
       title={installing ? "正在更新…" : `重启以更新到 v${newVersion ?? ""}`}
     >
       <RotateCw className={`w-3.5 h-3.5${installing ? " animate-spin" : ""}`} />
+      <span className="titlebar-update-label">{installing ? "更新中" : "更新"}</span>
     </button>
   );
 }

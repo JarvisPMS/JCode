@@ -1,6 +1,6 @@
 [package]
 name = "jcode"
-version = "0.9.11"
+version = "0.9.12"
 edition = "2021"
 
 [lib]
@@ -13,7 +13,7 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 # macos-private-api 与 tauri.macos.conf.json 中的 macOSPrivateApi 配套；
 # 在非 macOS 平台它是 no-op，所以放在主 features 列表里不会带来副作用。
-tauri = { version = "2", features = ["macos-private-api", "tray-icon", "image-ico"] }
+tauri = { version = "2", features = [ "tray-icon", "image-ico"] }
 tauri-plugin-opener = "2"
 tauri-plugin-store = "2"
 tauri-plugin-dialog = "2"

@@ -20,6 +20,8 @@
   --color-border: hsl(214.3 31.8% 91.4%);
   --color-input: hsl(214.3 31.8% 91.4%);
   --color-ring: hsl(222.2 84% 4.9%);
+  /* 品牌橘黄（取自 logo 渐变 #df7656→#c85f47），用于需要凸显的强调元素 */
+  --color-brand: #df7656;
   --radius: 0.5rem;
 }
 
@@ -44,6 +46,8 @@
   --color-border: hsl(222 14% 20%);
   --color-input: hsl(222 14% 20%);
   --color-ring: hsl(210 40% 80%);
+  /* 深色背景下稍提亮，保证对比度 */
+  --color-brand: #f0875f;
 }
 
 @layer base {
@@ -73,7 +77,7 @@
 
   /* 自定义标题栏 */
   .titlebar {
-    height: 40px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -162,7 +166,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 46px;
+    width: 34px;
     height: 100%;
     border: none;
     background: transparent;
@@ -185,17 +189,33 @@
     background: hsl(0 72% 41%);
     color: white;
   }
-  /* 有可安装更新时，标题栏的「重启更新」图标用主题色高亮并轻微脉冲 */
+  /* 有可安装更新时，标题栏显示一颗品牌橘黄「药丸」：实心橘底 + 白字，
+     刻意区别于旁边描边式窗口控件（最小化/最大化/关闭），强引导点击 */
   .titlebar-btn-update {
-    color: var(--color-primary);
-    animation: titlebar-update-pulse 1.8s ease-in-out infinite;
+    width: auto;
+    height: 22px;
+    align-self: center;
+    gap: 4px;
+    margin: 0 8px 0 2px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 1px 4px color-mix(in srgb, var(--color-brand) 45%, transparent);
+    animation: titlebar-update-pulse 2s ease-in-out infinite;
   }
   .titlebar-btn-update:hover {
-    background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+    background: color-mix(in srgb, var(--color-brand) 85%, #000);
+    color: #fff;
+  }
+  .titlebar-update-label {
+    line-height: 1;
   }
   @keyframes titlebar-update-pulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.45; }
+    50% { opacity: 0.62; }
   }
   /* 窗口失焦/最小化/隐藏时冻结按钮，强制覆盖 :hover 残留 */
   .titlebar-frozen .titlebar-btn,

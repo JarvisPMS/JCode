@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicedoc/tauri/refs/heads/main/packages/tauri-utils/schema.json",
   "productName": "JCode",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "identifier": "com.jcode.launcher",
   "build": {
     "frontendDist": "../dist",
